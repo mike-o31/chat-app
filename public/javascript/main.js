@@ -2,6 +2,8 @@ const socket = io()
 
 const chatForm = document.getElementById('chat-form')
 const chatMessage = document.querySelector('.chat-messages')
+const userList = document.getElementById('users')
+const roomName = document.getElementById('room-name')
 
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
@@ -9,9 +11,12 @@ const { username, room } = Qs.parse(location.search, {
 
 socket.emit('joinRoom', { username, room })
 
-socket.on('message', (msg) => {
-    console.log(msg)
+socket.on('roomUsers', ({ room, users }) =>{
+    displayUsers(users)
+    displayRoom(room)
+})
 
+socket.on('message', (msg) => {
     displayMessage(msg)
 
     chatMessage.scrollTop = chatMessage.scrollHeight
@@ -34,3 +39,12 @@ const displayMessage = (msg) => {
     newMessage.innerHTML = `<p class="message-data">${msg.name} <span>${msg.time}</span></p><p>${msg.message}</p>`
     chatMessage.appendChild(newMessage)
 }
+
+const displayUsers = (users) => {
+    userList.innerHTML = `${users.map((user) => `<li>${user.name}</li>`).join('')}`
+}
+
+const displayRoom = (room) => {
+    roomName.innerText = room
+}
+

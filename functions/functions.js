@@ -11,15 +11,27 @@ const messageFormat = (name, message) => {
 }
 
 const joiningUser = (id, name, room) => {
-    const user = users.push(id, name, room)
+    const user = { id, name, room }
+
+    users.push(user)
 
     return user
 }
 
 const getCurrentUser = (id) => {
-    const userIndex = users.find((user) => user.id === id)
-
-    return userIndex
+    return users.find((user) => user.id === id)
 }
 
-module.exports = {  messageFormat, joiningUser, getCurrentUser }
+const leavingUser = (id) => {
+    const userIndex = users.findIndex((user) => user.id === id)
+
+    if (userIndex !== -1) {
+        return users.splice(userIndex, 1)[0]
+    }
+}
+
+const getRoomUsers = (room) => {
+    return users.filter((user) => user.room === room)
+}
+
+module.exports = {  messageFormat, joiningUser, getCurrentUser, leavingUser, getRoomUsers }

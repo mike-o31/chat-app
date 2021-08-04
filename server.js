@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { messageFormat, joiningUser, getCurrentUser } = require('./functions/functions')
+const { messageFormat, joiningUser, getCurrentUser, leavingUser, getRoomUsers } = require('./functions/functions')
 
 const app = express()
 const server = http.createServer(app)
@@ -16,18 +16,34 @@ io.on('connection', (client) => {
     client.on('joinRoom', ({ username, room }) => {
         const user = joiningUser(client.id, username, room)
 
-        client.emit('message', messageFormat(admin, 'Welcome to the Group Chat!'))
+        client.join(user.room)
 
-        client.broadcast.emit('message', messageFormat(admin, `${username} has joined the chat!`))
+        client.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
+
+        client.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
+
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        })
     })
 
     client.on('userMessage', (msg) => {
         const user = getCurrentUser(client.id)
-        io.emit('message', messageFormat(user, msg))
+        io.to(user.room).emit('message', messageFormat(user.name, msg))
     })
 
     client.on('disconnect', () => {
-        io.emit('message', messageFormat(admin, 'A user has disconnected'))
+        const user = leavingUser(client.id)
+        
+        if (user) {
+            io.to(user.room).emit('message', messageFormat(admin, `${user.name} has disconnected`))
+
+            io.to(user.room).emit('roomUsers', {
+                room: user.room,
+                users: getRoomUsers(user.room)
+            })
+        }
     })
 })
 
