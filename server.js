@@ -10,6 +10,20 @@ const PORT = process.env.PORT || 5000
 
 app.use(express.static(path.join(__dirname, 'public')))
 
+io.on('connection', (client) => {
+    client.emit('message', 'Welcome to the Group Chat!')
+
+    client.broadcast.emit('message', 'A user has joined the chat!')
+
+    client.on('userMessage', (msg) => {
+        io.emit('message', msg)
+    })
+
+    client.on('disconnect', () => {
+        io.emit('message', 'A user has disconnected')
+    })
+})
+
 server.listen(PORT, () => {
     console.log(`Running on port: ${PORT}`)
 })

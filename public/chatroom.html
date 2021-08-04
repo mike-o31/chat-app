@@ -20,7 +20,12 @@
                 <h3>Users:</h3>
                 <ul id="users"></ul>
             </div>
-            <div class="chat-messages"></div>
+        <div class="chat-messages">
+            <div class="new-message">
+                <p class="message-data">User <span>10:30am</span></p>
+                <p>Hi there!</p>
+            </div>
+    </div>
         </main>
         <div class="chat-form-container">
             <form id="chat-form">
@@ -29,6 +34,7 @@
             </form>
         </div>
     </div>
-    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="javascript/main.js"></script>
 </body>
 </html>
