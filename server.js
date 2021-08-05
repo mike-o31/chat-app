@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { messageFormat, joiningUser, getCurrentUser, leavingUser, getRoomUsers } = require('./functions/functions')
+const { messageFormat, joiningUser, getCurrentUser, leavingUser, getUsersInRoom } = require('./functions/functions')
 
 const app = express()
 const server = http.createServer(app)
@@ -22,9 +22,9 @@ io.on('connection', (client) => {
 
         client.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
 
-        io.to(user.room).emit('roomUsers', {
+        io.to(user.room).emit('usersInRoom', {
             room: user.room,
-            users: getRoomUsers(user.room)
+            users: getUsersInRoom(user.room)
         })
     })
 
@@ -39,9 +39,9 @@ io.on('connection', (client) => {
         if (user) {
             io.to(user.room).emit('message', messageFormat(admin, `${user.name} has disconnected`))
 
-            io.to(user.room).emit('roomUsers', {
+            io.to(user.room).emit('usersInRoom', {
                 room: user.room,
-                users: getRoomUsers(user.room)
+                users: getUsersInRoom(user.room)
             })
         }
     })
