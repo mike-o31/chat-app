@@ -9,6 +9,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 const PORT = process.env.PORT || 5000
 const admin = 'Admin'
+const usersTyping = {}
 
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -31,6 +32,21 @@ io.on('connection', (client) => {
     client.on('userMessage', (msg) => {
         const user = getCurrentUser(client.id)
         io.to(user.room).emit('message', messageFormat(user.name, msg))
+    })
+
+    client.on('typing', ({ username, room }) => {
+        usersTyping[client.id] = 1
+
+        client.broadcast.to(room).emit('typing', {
+            user: username,
+            usersTyping: Object.keys(usersTyping).length
+        })
+
+        client.on('notTyping', () => {
+            delete usersTyping[client.id]
+
+            client.broadcast.to(room).emit('notTyping', (Object.keys(usersTyping).length))
+        })
     })
 
     client.on('disconnect', () => {

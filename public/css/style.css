@@ -82,7 +82,7 @@ a {
 }
 
 .chat-sidebar ul li {
-	padding: 10px 0;
+	padding: 10px 0 -5px;
 }
 
 .chat-messages {
@@ -108,6 +108,18 @@ a {
 
 .chat-messages .new-message .message-data span {
 	color: #777;
+}
+
+.typing-message {
+	align-self: end;
+	top: 10px;
+	left: 10px;
+	color: #666;
+	font-size: 16px;
+}
+
+.typing-message span {
+	color: rgb(0, 89, 255);
 }
 
 .chat-form-container {

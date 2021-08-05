@@ -30,8 +30,8 @@ const leavingUser = (id) => {
     }
 }
 
-const getRoomUsers = (room) => {
+const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room)
 }
 
-module.exports = {  messageFormat, joiningUser, getCurrentUser, leavingUser, getRoomUsers }
+module.exports = {  messageFormat, joiningUser, getCurrentUser, leavingUser, getUsersInRoom }

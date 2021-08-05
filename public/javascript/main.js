@@ -4,6 +4,7 @@ const chatForm = document.getElementById('chat-form')
 const chatMessage = document.querySelector('.chat-messages')
 const userList = document.getElementById('users')
 const roomName = document.getElementById('room-name')
+const typingMessage = document.querySelector('.typing-message')
 
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
@@ -22,22 +23,43 @@ socket.on('message', (msg) => {
     chatMessage.scrollTop = chatMessage.scrollHeight
 })
 
+socket.on('typing', ({ user, usersTyping }) => {
+    typingMessage.innerHTML = usersTyping === 1 ? `<span>${user}</span> is typing...` : 'Multiple people are typing...'
+})
+
+socket.on('notTyping', (usersTyping) => {
+    if (!usersTyping) {
+        typingMessage.innerHTML = ''
+    }
+})
+
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
     const userMessage = e.target.elements.message.value
 
     socket.emit('userMessage', userMessage)
+    socket.emit('notTyping')
 
     e.target.elements.message.value = ''
     e.target.elements.message.focus
+})
+
+chatForm.addEventListener('input', (e) => {
+    e.preventDefault()
+
+    socket.emit('typing', { username, room })
+
+    if (e.target.value === '') {
+        socket.emit('notTyping')
+    }
 })
 
 const displayMessage = (msg) => {
     const newMessage = document.createElement('div')
     newMessage.classList.add('new-message')
     newMessage.innerHTML = `<p class="message-data">${msg.name} <span>${msg.time}</span></p><p>${msg.message}</p>`
-    chatMessage.appendChild(newMessage)
+    chatMessage.insertBefore(newMessage, typingMessage)
 }
 
 const displayUsers = (users) => {
