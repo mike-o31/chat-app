@@ -24,7 +24,7 @@ socket.on('message', (msg) => {
 })
 
 socket.on('typing', ({ user, usersTyping }) => {
-    typingMessage.innerHTML = usersTyping === 1 ? `<span>${user}</span> is typing...` : 'Multiple people are typing...'
+    typingMessage.innerHTML = usersTyping > 1 ? `Multiple people are typing...` : `<span><strong>${user}</strong></span> is typing...`
 })
 
 socket.on('notTyping', (usersTyping) => {
@@ -45,7 +45,7 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.message.focus
 })
 
-chatForm.addEventListener('input', (e) => {
+chatForm.addEventListener('keyup', (e) => {
     e.preventDefault()
 
     socket.emit('typing', { username, room })
@@ -63,7 +63,7 @@ const displayMessage = (msg) => {
 }
 
 const displayUsers = (users) => {
-    userList.innerHTML = `${users.map((user) => `<li>${user.name}</li>`).join('')}`
+    userList.innerHTML = `${users.map((user) => `<li><strong>${user.name}</strong></li>`).join('')}`
 }
 
 const displayRoom = (room) => {

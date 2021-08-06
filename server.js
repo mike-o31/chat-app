@@ -53,7 +53,7 @@ io.on('connection', (client) => {
         const user = leavingUser(client.id)
         
         if (user) {
-            io.to(user.room).emit('message', messageFormat(admin, `${user.name} has disconnected`))
+            io.to(user.room).emit('message', messageFormat(admin, `${user.name} has left the chat...`))
 
             io.to(user.room).emit('usersInRoom', {
                 room: user.room,
