@@ -45,7 +45,7 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.message.focus
 })
 
-chatForm.addEventListener('keyup', (e) => {
+chatForm.addEventListener('input', (e) => {
     e.preventDefault()
 
     socket.emit('typing', { username, room })

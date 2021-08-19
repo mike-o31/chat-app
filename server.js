@@ -13,15 +13,15 @@ const usersTyping = {}
 
 app.use(express.static(path.join(__dirname, 'public')))
 
-io.on('connection', (client) => {
-    client.on('joinRoom', ({ username, room }) => {
-        const user = joiningUser(client.id, username, room)
+io.on('connection', (socket) => {
+    socket.on('joinRoom', ({ username, room }) => {
+        const user = joiningUser(socket.id, username, room)
 
-        client.join(user.room)
+        socket.join(user.room)
 
-        client.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
+        socket.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
 
-        client.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
+        socket.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
 
         io.to(user.room).emit('usersInRoom', {
             room: user.room,
@@ -29,28 +29,28 @@ io.on('connection', (client) => {
         })
     })
 
-    client.on('userMessage', (msg) => {
-        const user = getCurrentUser(client.id)
+    socket.on('userMessage', (msg) => {
+        const user = getCurrentUser(socket.id)
         io.to(user.room).emit('message', messageFormat(user.name, msg))
     })
 
-    client.on('typing', ({ username, room }) => {
-        usersTyping[client.id] = 1
+    socket.on('typing', ({ username, room }) => {
+        usersTyping[socket.id] = 1
 
-        client.broadcast.to(room).emit('typing', {
+        socket.broadcast.to(room).emit('typing', {
             user: username,
             usersTyping: Object.keys(usersTyping).length
         })
 
-        client.on('notTyping', () => {
-            delete usersTyping[client.id]
+        socket.on('notTyping', () => {
+            delete usersTyping[socket.id]
 
-            client.broadcast.to(room).emit('notTyping', (Object.keys(usersTyping).length))
+            socket.broadcast.to(room).emit('notTyping', (Object.keys(usersTyping).length))
         })
     })
 
-    client.on('disconnect', () => {
-        const user = leavingUser(client.id)
+    socket.on('disconnect', () => {
+        const user = leavingUser(socket.id)
         
         if (user) {
             io.to(user.room).emit('message', messageFormat(admin, `${user.name} has left the chat...`))
