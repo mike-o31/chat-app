@@ -27,13 +27,14 @@ const runServer = async () => {
         io.on('connection', (socket) => {
             const database = client.db(databaseName)
             const chats = database.collection('chats')
+            const chatRoom = { room: 1 }
 
-            chats.find().limit(100).sort({_id:1}).toArray((error, res) => {
+
+            chats.find().limit(200).sort({_id:1}).toArray((error, res) => {
                 if (error) {
                     throw error
                 }
 
-                console.log(res)
                 socket.on('joinRoom', ({ username, room }) => {
                     const user = joiningUser(socket.id, username, room)
 
@@ -41,8 +42,8 @@ const runServer = async () => {
 
                     socket.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
 
-                    // socket.to(user.room).emit('message', res)
-
+                    io.to(user.room).emit('output', res)
+                    
                     socket.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
 
                     io.to(user.room).emit('usersInRoom', {
@@ -54,7 +55,7 @@ const runServer = async () => {
                 socket.on('userMessage', (msg) => {
                     const user = getCurrentUser(socket.id)
 
-                    chats.insertOne(messageFormat(user.name, msg), () => {
+                    chats.insertOne(messageFormat(user.name, msg, user.room), () => {
                         io.to(user.room).emit('message', messageFormat(user.name, msg))
                     })
                 })

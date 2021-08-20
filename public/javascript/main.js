@@ -23,6 +23,14 @@ socket.on('message', (msg) => {
     chatMessage.scrollTop = chatMessage.scrollHeight
 })
 
+socket.on('output', (data) => {
+    if (data.length) {
+        data.forEach((message) => {
+            displayMessage(message)
+        })
+    }
+})
+
 socket.on('typing', ({ user, usersTyping }) => {
     typingMessage.innerHTML = usersTyping > 1 ? `Multiple people are typing...` : `<span><strong>${user}</strong></span> is typing...`
 })
@@ -69,4 +77,3 @@ const displayUsers = (users) => {
 const displayRoom = (room) => {
     roomName.innerText = room
 }
-
