@@ -13,7 +13,6 @@ const PORT = process.env.PORT || 5000
 const admin = 'Admin'
 const databaseName = 'realtime-chat-app'
 const uri = `mongodb+srv://Mike-O:${password}@cluster0.wt8rx.mongodb.net/${databaseName}?retryWrites=true&w=majority`
-// const url = `mongodb://localhost:27017/${databaseName}`
 const client = new MongoClient(uri)
 const usersTyping = {}
 
@@ -42,7 +41,7 @@ const runServer = async () => {
 
                     socket.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
 
-                    io.to(user.room).emit('output', res)
+                    io.to(user.room).emit('dbOutput', res)
                     
                     socket.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
 

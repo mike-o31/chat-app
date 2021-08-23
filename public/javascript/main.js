@@ -23,7 +23,7 @@ socket.on('message', (msg) => {
     chatMessage.scrollTop = chatMessage.scrollHeight
 })
 
-socket.on('output', (data) => {
+socket.on('dbOutput', (data) => {
     if (data.length) {
         data.forEach((message) => {
             displayMessage(message)
