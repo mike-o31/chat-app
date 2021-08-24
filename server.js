@@ -3,14 +3,14 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { messageFormat, joiningUser, getCurrentUser, leavingUser, getUsersInRoom } = require('./functions/functions')
-const password = require('./config/config')
+const { messageFormat, joiningUser, getCurrentUser, leavingUser, getUsersInRoom } = require('./public/functions/functions')
+const password = require('./public/config/config')
 
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 const PORT = process.env.PORT || 5000
-const admin = 'Admin'
+const adminBot = 'AdminBot'
 const databaseName = 'realtime-chat-app'
 const uri = `mongodb+srv://Mike-O:${password}@cluster0.wt8rx.mongodb.net/${databaseName}?retryWrites=true&w=majority`
 const client = new MongoClient(uri)
@@ -26,7 +26,7 @@ const runServer = async () => {
         io.on('connection', (socket) => {
             const database = client.db(databaseName)
             const chats = database.collection('chats')
-            const chatRoom = { room: 1 }
+            const chatRoomProjection = { room: 1 }
 
 
             chats.find().limit(200).sort({_id:1}).toArray((error, res) => {
@@ -39,11 +39,11 @@ const runServer = async () => {
 
                     socket.join(user.room)
 
-                    socket.emit('message', messageFormat(admin, `Welcome to the ${room} room!`))
+                    socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
 
                     io.to(user.room).emit('dbOutput', res)
                     
-                    socket.broadcast.to(user.room).emit('message', messageFormat(admin, `${username} has joined the chat!`))
+                    socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
 
                     io.to(user.room).emit('usersInRoom', {
                         room: user.room,
@@ -78,7 +78,7 @@ const runServer = async () => {
                     const user = leavingUser(socket.id)
 
                     if (user) {
-                        io.to(user.room).emit('message', messageFormat(admin, `${user.name} has left the chat...`))
+                        io.to(user.room).emit('message', messageFormat(adminBot, `${user.name} has left the chat...`))
 
                         io.to(user.room).emit('usersInRoom', {
                             room: user.room,

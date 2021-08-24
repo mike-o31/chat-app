@@ -6,7 +6,7 @@ const messageFormat = (name, message, room) => {
    return {
        name: name,
        message: message,
-       time: moment().format('h:mm a'),
+       time: moment().format('MM/DD/YYYY, h:mm A'),
        room: room
    }
 }

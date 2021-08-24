@@ -32,7 +32,7 @@ socket.on('dbOutput', (data) => {
 })
 
 socket.on('typing', ({ user, usersTyping }) => {
-    typingMessage.innerHTML = usersTyping > 1 ? `Multiple people are typing...` : `<span><strong>${user}</strong></span> is typing...`
+    typingMessage.innerHTML = usersTyping === 1 ? `<span><strong>${user}</strong></span> is typing...` : `Multiple people are typing...`
 })
 
 socket.on('notTyping', (usersTyping) => {
@@ -66,7 +66,7 @@ chatForm.addEventListener('input', (e) => {
 const displayMessage = (msg) => {
     const newMessage = document.createElement('div')
     newMessage.classList.add('new-message')
-    newMessage.innerHTML = `<p class="message-data">${msg.name} <span>${msg.time}</span></p><p>${msg.message}</p>`
+    newMessage.innerHTML = `<p class="message-data"><strong>${msg.name}</strong> <span>${msg.time}</span></p><p>${msg.message}</p>`
     chatMessage.insertBefore(newMessage, typingMessage)
 }
 
