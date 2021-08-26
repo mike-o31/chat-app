@@ -23,15 +23,15 @@ const runServer = async () => {
         await mongoClient.connect()
         console.log('Connected to server...')
 
-        io.on('connection', (socket) => {
-            const database = mongoClient.db(databaseName)
-            const chats = database.collection('chats', { capped: true, size: 52428800, max: 5000 })
+        const database = mongoClient.db(databaseName)
+        const chats = database.collection('chats')
 
-            chats.find().limit(200).sort({_id:1}).toArray((error, res) => {
-                if (error) {
-                    throw error
-                }
+        chats.find().limit(200).toArray((error, res) => {
+            if (error) {
+                throw error
+            }
 
+            io.on('connection', (socket) => {
                 socket.on('joinRoom', ({ username, room }) => {
                     const user = userJoining(socket.id, username, room)
 
