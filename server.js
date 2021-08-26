@@ -3,7 +3,7 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const { messageFormat, joiningUser, getCurrentUser, leavingUser, getUsersInRoom } = require('./public/functions/functions')
+const { messageFormat, userJoining, getCurrentUser, userLeaving, getUsersInRoom } = require('./public/functions/functions')
 const password = require('./public/config/config')
 
 const app = express()
@@ -25,7 +25,7 @@ const runServer = async () => {
 
         io.on('connection', (socket) => {
             const database = mongoClient.db(databaseName)
-            const chats = database.collection('chats')
+            const chats = database.collection('chats', { capped: true, size: 52428800, max: 5000 })
 
             chats.find().limit(200).sort({_id:1}).toArray((error, res) => {
                 if (error) {
@@ -33,7 +33,7 @@ const runServer = async () => {
                 }
 
                 socket.on('joinRoom', ({ username, room }) => {
-                    const user = joiningUser(socket.id, username, room)
+                    const user = userJoining(socket.id, username, room)
 
                     socket.join(user.room)
 
@@ -73,7 +73,7 @@ const runServer = async () => {
                 })
 
                 socket.on('disconnect', () => {
-                    const user = leavingUser(socket.id)
+                    const user = userLeaving(socket.id)
 
                     if (user) {
                         io.to(user.room).emit('message', messageFormat(adminBot, `${user.name} has left the chat...`))
