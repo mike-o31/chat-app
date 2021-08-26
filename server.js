@@ -13,21 +13,19 @@ const PORT = process.env.PORT || 5000
 const adminBot = 'AdminBot'
 const databaseName = 'realtime-chat-app'
 const uri = `mongodb+srv://Mike-O:${password}@cluster0.wt8rx.mongodb.net/${databaseName}?retryWrites=true&w=majority`
-const client = new MongoClient(uri)
+const mongoClient = new MongoClient(uri)
 const usersTyping = {}
 
 app.use(express.static(path.join(__dirname, 'public')))
 
 const runServer = async () => {
     try {
-        await client.connect()
+        await mongoClient.connect()
         console.log('Connected to server...')
 
         io.on('connection', (socket) => {
-            const database = client.db(databaseName)
+            const database = mongoClient.db(databaseName)
             const chats = database.collection('chats')
-            const chatRoomProjection = { room: 1 }
-
 
             chats.find().limit(200).sort({_id:1}).toArray((error, res) => {
                 if (error) {
