@@ -26,26 +26,27 @@ const runServer = async () => {
         const database = mongoClient.db(databaseName)
         const chats = database.collection('chats')
 
-        chats.find().limit(200).toArray((error, res) => {
-            if (error) {
-                throw error
-            }
-
             io.on('connection', (socket) => {
                 socket.on('joinRoom', ({ username, room }) => {
                     const user = userJoining(socket.id, username, room)
 
                     socket.join(user.room)
 
-                    socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
+                    chats.find({ room: room }).limit(200).toArray((error, res) => {
+                        if (error) {
+                            throw error
+                        }
 
-                    io.to(user.room).emit('dbOutput', res)
-                    
-                    socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
+                        socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
 
-                    io.to(user.room).emit('usersInRoom', {
-                        room: user.room,
-                        users: getUsersInRoom(user.room)
+                        io.to(user.room).emit('dbOutput', res)
+
+                        socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
+
+                        io.to(user.room).emit('usersInRoom', {
+                            room: user.room,
+                            users: getUsersInRoom(user.room)
+                        })
                     })
                 })
 
@@ -68,7 +69,7 @@ const runServer = async () => {
                     socket.on('notTyping', () => {
                         delete usersTyping[socket.id]
 
-                        socket.broadcast.to(room).emit('notTyping', (Object.keys(usersTyping).length))
+                        socket.to(room).emit('notTyping', (Object.keys(usersTyping).length))
                     })
                 })
 
@@ -85,7 +86,6 @@ const runServer = async () => {
                     }
                 })
             })
-        })
     } catch (error) {
         console.log(error)
     }
