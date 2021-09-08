@@ -26,8 +26,9 @@ const runServer = async () => {
         const database = mongoClient.db(databaseName)
         const chats = database.collection('chats')
 
-            io.on('connection', (socket) => {
-                socket.on('joinRoom', ({ username, room }) => {
+        await io.on('connection', async (socket) => {
+            try {
+                await socket.on('joinRoom', ({ username, room }) => {
                     const user = userJoining(socket.id, username, room)
 
                     socket.join(user.room)
@@ -36,7 +37,7 @@ const runServer = async () => {
                         if (error) {
                             throw error
                         }
-
+                        console.log(res)
                         socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
 
                         io.to(user.room).emit('dbOutput', res)
@@ -50,7 +51,7 @@ const runServer = async () => {
                     })
                 })
 
-                socket.on('userMessage', (msg) => {
+                await socket.on('userMessage', (msg) => {
                     const user = getCurrentUser(socket.id)
 
                     chats.insertOne(messageFormat(user.name, msg, user.room), () => {
@@ -58,7 +59,7 @@ const runServer = async () => {
                     })
                 })
 
-                socket.on('typing', ({ username, room }) => {
+                await socket.on('typing', ({ username, room }) => {
                     usersTyping[socket.id] = 1
 
                     socket.broadcast.to(room).emit('typing', {
@@ -73,7 +74,7 @@ const runServer = async () => {
                     })
                 })
 
-                socket.on('disconnect', () => {
+                await socket.on('disconnect', () => {
                     const user = userLeaving(socket.id)
 
                     if (user) {
@@ -85,7 +86,10 @@ const runServer = async () => {
                         })
                     }
                 })
-            })
+            } catch (error) {
+                console.log(error)
+            }
+        })
     } catch (error) {
         console.log(error)
     }
