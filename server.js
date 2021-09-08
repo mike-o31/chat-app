@@ -37,7 +37,7 @@ const runServer = async () => {
                         if (error) {
                             throw error
                         }
-                        console.log(res)
+
                         socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
 
                         io.to(user.room).emit('dbOutput', res)
