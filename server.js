@@ -1,10 +1,10 @@
+require('dotenv').config()
 const { MongoClient } = require('mongodb')
 const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
 const { messageFormat, userJoining, getCurrentUser, userLeaving, getUsersInRoom } = require('./public/functions/functions')
-const password = require('./public/config/config')
 
 const app = express()
 const server = http.createServer(app)
@@ -12,7 +12,7 @@ const io = socketio(server)
 const PORT = process.env.PORT || 5000
 const adminBot = 'AdminBot'
 const databaseName = 'realtime-chat-app'
-const uri = `mongodb+srv://Mike-O:${password}@cluster0.wt8rx.mongodb.net/${databaseName}?retryWrites=true&w=majority`
+const uri = `mongodb+srv://Mike-O:${process.env.PASSWORD}@cluster0.wt8rx.mongodb.net/${databaseName}?retryWrites=true&w=majority`
 const mongoClient = new MongoClient(uri)
 const usersTyping = {}
 
@@ -41,7 +41,7 @@ const runServer = async () => {
                         socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
 
                         io.to(user.room).emit('dbOutput', res)
-
+                        
                         socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
 
                         io.to(user.room).emit('usersInRoom', {
