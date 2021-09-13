@@ -26,69 +26,65 @@ const runServer = async () => {
         const database = mongoClient.db(databaseName)
         const chats = database.collection('chats')
 
-        await io.on('connection', async (socket) => {
-            try {
-                await socket.on('joinRoom', ({ username, room }) => {
-                    const user = userJoining(socket.id, username, room)
+        io.on('connection', (socket) => {
+            socket.on('joinRoom', ({ username, room }) => {
+                const user = userJoining(socket.id, username, room)
 
-                    socket.join(user.room)
+                socket.join(user.room)
 
-                    chats.find({ room: room }).limit(200).toArray((error, res) => {
-                        if (error) {
-                            throw error
-                        }
-
-                        socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
-
-                        io.to(user.room).emit('dbOutput', res)
-                        
-                        socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
-
-                        io.to(user.room).emit('usersInRoom', {
-                            room: user.room,
-                            users: getUsersInRoom(user.room)
-                        })
-                    })
-                })
-
-                await socket.on('userMessage', (msg) => {
-                    const user = getCurrentUser(socket.id)
-
-                    chats.insertOne(messageFormat(user.name, msg, user.room), () => {
-                        io.to(user.room).emit('message', messageFormat(user.name, msg))
-                    })
-                })
-
-                await socket.on('typing', ({ username, room }) => {
-                    usersTyping[socket.id] = 1
-
-                    socket.broadcast.to(room).emit('typing', {
-                        user: username,
-                        usersTyping: Object.keys(usersTyping).length
-                    })
-
-                    socket.on('notTyping', () => {
-                        delete usersTyping[socket.id]
-
-                        socket.to(room).emit('notTyping', (Object.keys(usersTyping).length))
-                    })
-                })
-
-                await socket.on('disconnect', () => {
-                    const user = userLeaving(socket.id)
-
-                    if (user) {
-                        io.to(user.room).emit('message', messageFormat(adminBot, `${user.name} has left the chat...`))
-
-                        io.to(user.room).emit('usersInRoom', {
-                            room: user.room,
-                            users: getUsersInRoom(user.room)
-                        })
+                chats.find({ room: room }).limit(200).toArray((error, res) => {
+                    if (error) {
+                        throw error
                     }
+
+                    socket.emit('message', messageFormat(adminBot, `Welcome to the ${room} room!`))
+
+                    io.to(user.room).emit('dbOutput', res)
+                    
+                    socket.broadcast.to(user.room).emit('message', messageFormat(adminBot, `${username} has joined the chat!`))
+
+                    io.to(user.room).emit('usersInRoom', {
+                        room: user.room,
+                        users: getUsersInRoom(user.room)
+                    })
                 })
-            } catch (error) {
-                console.log(error)
-            }
+            })
+
+            socket.on('userMessage', (msg) => {
+                const user = getCurrentUser(socket.id)
+
+                chats.insertOne(messageFormat(user.name, msg, user.room), () => {
+                    io.to(user.room).emit('message', messageFormat(user.name, msg))
+                })
+            })
+
+            socket.on('typing', ({ username, room }) => {
+                usersTyping[socket.id] = 1
+
+                socket.broadcast.to(room).emit('typing', {
+                    user: username,
+                    usersTyping: Object.keys(usersTyping).length
+                })
+
+                socket.on('notTyping', () => {
+                    delete usersTyping[socket.id]
+
+                    socket.to(room).emit('notTyping', (Object.keys(usersTyping).length))
+                })
+            })
+
+            socket.on('disconnect', () => {
+                const user = userLeaving(socket.id)
+
+                if (user) {
+                    io.to(user.room).emit('message', messageFormat(adminBot, `${user.name} has left the chat...`))
+
+                    io.to(user.room).emit('usersInRoom', {
+                        room: user.room,
+                        users: getUsersInRoom(user.room)
+                    })
+                }
+            })
         })
     } catch (error) {
         console.log(error)
