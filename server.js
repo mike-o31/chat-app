@@ -4,7 +4,6 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const movieApi = require('./movieApi')
 const { messageFormat, userJoining, getCurrentUser, userLeaving, getUsersInRoom } = require('./public/functions/functions')
 
 const app = express()
@@ -18,7 +17,6 @@ const mongoClient = new MongoClient(uri)
 const usersTyping = {}
 
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/movie', movieApi)
 
 const runServer = async () => {
     try {
