@@ -1,44 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
-        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="css/style.css">
-    <title>Chat Room</title>
-</head>
-<body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <h1><i class="fas fa-comments"></i> Group Chat</h1>
-            <a href="index.html" class="button"><strong>Leave Room</strong> <i class="fas fa-sign-out-alt"></i></a>
-        </header>
-        <main class="chat-main">
-            <div class="chat-sidebar left">
-                <h3>Room Name:</h3>
-                <h2 id="room-name"></h2>
-            </div>
-        <div class="chat-messages">
-            <div class="typing-message"></div>
-        </div>
-        <div class="chat-sidebar right">
-            <h3><i class="fas fa-users"></i> Users:</h3>
-            <ul id="users"></ul>
-        </div>
-        </main>
-        <div class="chat-form-container">
-            <form id="chat-form">
-                <input type="text" id="message" placeholder="Send Message..." required>
-                <button class="button"><strong>Send</strong></button>
-            </form>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"
-        integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="javascript/main.js"></script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+			integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="css/style.css" />
+		<title>Chat Room</title>
+	</head>
+	<body>
+		<div class="chat-container">
+			<header class="chat-header">
+				<a href="index.html" class="button"
+					><i class="fas fa-sign-out-alt fa-rotate-180"></i
+					><strong> Leave Room</strong>
+				</a>
+				<h1><i class="fas fa-comments"></i> Group Chat</h1>
+			</header>
+			<main class="chat-main">
+				<div class="chat-sidebar left">
+					<h3><i class="fas fa-bars"></i> Rooms:</h3>
+					<h2 id="room-name"></h2>
+				</div>
+				<div class="chat-messages">
+					<div class="typing-message"></div>
+				</div>
+				<div class="chat-sidebar right">
+					<h3><i class="fas fa-users"></i> Users:</h3>
+					<ul id="users"></ul>
+				</div>
+			</main>
+			<div class="chat-form-container">
+				<form id="chat-form">
+					<input
+						type="text"
+						id="message"
+						placeholder="Send Message..."
+						required
+					/>
+					<button class="button"><strong>Send</strong></button>
+				</form>
+			</div>
+		</div>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"
+			integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="javascript/main.js"></script>
+	</body>
 </html>
