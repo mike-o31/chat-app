@@ -79,7 +79,7 @@ a {
 .chat-main {
 	display: grid;
 	grid-template-columns: 15% 70% 15%;
-	height: 82%;
+	height: 80%;
 }
 
 .chat-sidebar {
@@ -253,7 +253,7 @@ a {
 	}
 
 	.chat-messages .new-message .message-data {
-		font-size: 0.6em;
+		font-size: 0.8em;
 	}
 
 	/* .chat-main {
