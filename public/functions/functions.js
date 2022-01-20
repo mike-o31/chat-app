@@ -8,7 +8,7 @@ const messageFormat = (name, message, room) => {
 	return {
 		name: name,
 		message: message,
-		time: dt.toLocaleString(DateTime.DATETIME_FULL),
+		time: dt.toLocaleString(DateTime.DATETIME_SHORT),
 		room: room,
 	};
 };
