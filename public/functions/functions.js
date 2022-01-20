@@ -3,7 +3,7 @@ const { DateTime } = require('luxon');
 const users = [];
 
 const messageFormat = (name, message, room) => {
-	const dt = DateTime.now();
+	const dt = DateTime.local();
 
 	return {
 		name: name,
